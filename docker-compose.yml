@@ -4,13 +4,18 @@ services:
       context: .
       dockerfile: Dockerfile.coolify
     restart: unless-stopped
+    
+    command: ["node", "dist/index.js", "gateway", "--bind", "lan", "--port", "18789"]
+    
     environment:
       - NODE_ENV=production
       - HOME=/home/node
-      - GATEWAY_MODE=local
+      - GATEWAY_MODE=local 
+    
     volumes:
       - moltbot_config:/home/node/.moltbot
       - moltbot_workspace:/home/node/clawd
+    
     ports:
       - "18789:18789"
 
