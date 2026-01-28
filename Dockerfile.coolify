@@ -23,12 +23,17 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build application
-RUN pnpm build
+# Build A2UI bundle first (required before main build)
+RUN pnpm canvas:a2ui:bundle || echo "A2UI bundle failed, continuing..."
+
+# Build UI components
 RUN pnpm ui:install
 RUN pnpm ui:build
 
+# Build main application
+RUN pnpm build
+
 ENV NODE_ENV=production
 
-# Default command (will be overridden in Coolify)
+# Default command (will be overridden in docker-compose)
 CMD ["node", "dist/index.js", "gateway", "--bind", "0.0.0.0", "--port", "18789"]
