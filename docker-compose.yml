@@ -7,8 +7,9 @@ services:
     environment:
       - NODE_ENV=production
       - HOME=/home/node
+      - GATEWAY_MODE=local
     volumes:
-      - moltbot_config:/home/node/.clawdbot
+      - moltbot_config:/home/node/.moltbot
       - moltbot_workspace:/home/node/clawd
     ports:
       - "18789:18789"
