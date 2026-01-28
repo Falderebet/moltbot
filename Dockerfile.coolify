@@ -33,8 +33,8 @@ RUN pnpm ui:install
 RUN pnpm ui:build
 
 # Build TypeScript without the A2UI bundle step
-# This replicates the build command but skips canvas:a2ui:bundle
-RUN tsc -p tsconfig.json && \
+# Use pnpm exec to access locally installed binaries
+RUN pnpm exec tsc -p tsconfig.json && \
     node --import tsx scripts/canvas-a2ui-copy.ts && \
     node --import tsx scripts/copy-hook-metadata.ts && \
     node --import tsx scripts/write-build-info.ts
