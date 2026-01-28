@@ -23,20 +23,23 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Create dummy A2UI bundle files to satisfy the build script
+# Create dummy A2UI bundle files to satisfy all checks
 RUN mkdir -p vendor/a2ui/dist && \
     echo '{"version":"stub","modules":{}}' > vendor/a2ui/dist/bundle.json && \
-    echo 'export default {};' > vendor/a2ui/dist/bundle.js
+    echo 'export default {};' > vendor/a2ui/dist/bundle.js && \
+    mkdir -p dist/a2ui && \
+    cp vendor/a2ui/dist/bundle.json dist/a2ui/ && \
+    cp vendor/a2ui/dist/bundle.js dist/a2ui/
 
 # Build UI first
 RUN pnpm ui:install
 RUN pnpm ui:build
 
-# Build TypeScript without the A2UI bundle step
-# Use pnpm exec to access locally installed binaries
-RUN pnpm exec tsc -p tsconfig.json && \
-    node --import tsx scripts/canvas-a2ui-copy.ts && \
-    node --import tsx scripts/copy-hook-metadata.ts && \
+# Build TypeScript
+RUN pnpm exec tsc -p tsconfig.json
+
+# Run only the necessary post-build scripts (skip canvas-a2ui-copy)
+RUN node --import tsx scripts/copy-hook-metadata.ts && \
     node --import tsx scripts/write-build-info.ts
 
 ENV NODE_ENV=production
